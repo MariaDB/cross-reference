@@ -1,0 +1,9 @@
+asgiref==3.8.1
+Django==3.2.3
+gunicorn==20.1.0
+mariadb==1.1.6
+mysqlclient==2.0.3
+packaging==24.2
+pytz==2024.2
+setuptools==75.6.0
+sqlparse==0.5.2
