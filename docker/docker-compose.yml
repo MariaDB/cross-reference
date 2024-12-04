@@ -41,10 +41,10 @@ services:
       args:
         nginx_version: "${NGINX_VERSION}"
     restart: always
+    environment:
+      - NGINX_LISTENING_PORT
     volumes:
       - static_volume:/app/src/staticfiles:Z
-    ports:
-      - 8081:80
     depends_on:
       - web
     container_name: crossreference-nginx
