@@ -6,7 +6,8 @@ from django.http import HttpResponse
 from .models import select_test_failures
 
 def index(request):
-  available_filters = ["branch", "revision", "platform", "dt", "bbnum", "typ", "info", "test_name", "test_variant", "info_text", "failure_text", "limit"]
+  available_filters = ["branch", "revision", "platform", "dt", "bbnum", "typ", 
+                       "info", "test_name", "test_variant", "info_text", "failure_text", "limit"]
 
   if request.method == 'GET':
     qd = request.GET

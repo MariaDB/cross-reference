@@ -57,15 +57,17 @@ class TestFailure(models.Model):
 
 
 def select_test_failures(filters, include_failures=True):
-  available_filters = ["branch", "revision", "platform", "dt", "bbnum", "typ", "info", "test_name", "test_variant", "info_text", "failure_text"]
+  available_filters = ["branch", "revision", "platform", "dt", "bbnum", "typ", 
+                       "info", "test_name", "test_variant", "info_text", "failure_text"]
 
   # New implementation
   limit = 50
   if 'limit' in filters and filters['limit'] != '':
     limit = int(filters['limit'])
 
+
   test_run_filters = None
-  test_failure_filters = None
+  test_failure_filters = TestFailure.objects.using('buildbot').all()
 
   reg_exp = {
     'branch': [
@@ -218,12 +220,7 @@ def select_test_failures(filters, include_failures=True):
         if not len(q_objects):
           continue
 
-        # If it's the first time filtering, then query the database model
-        # Otherwise use the variable to continue filtering
-        if test_failure_filters is not None:
-          test_failure_filters = test_failure_filters.filter(q_objects)
-        else:
-          test_failure_filters = TestFailure.objects.filter(q_objects)
+        test_failure_filters = test_failure_filters.filter(q_objects)
 
   # From Date dropdown filtering
   if filters['dt']:
@@ -236,11 +233,8 @@ def select_test_failures(filters, include_failures=True):
         pass
       # Include the date in filtering if the passes the try/except block
       else:
-        if test_failure_filters is not None:
-          test_failure_filters = test_failure_filters.filter(Q(test_run_id__dt__gte=formatted_date))
-        else:
-          test_failure_filters = TestFailure.objects.filter(Q(test_run_id__dt__gte=formatted_date))
-
+        test_failure_filters = test_failure_filters.filter(Q(test_run_id__dt__gte=formatted_date))
+        
   # Apply the limit filer and get related models to limit the no. of queries
   if test_failure_filters is not None:
     test_failure_filters = test_failure_filters.order_by('-test_run_id__dt')

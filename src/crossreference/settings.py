@@ -62,6 +62,14 @@ DATABASES = {
         'PASSWORD': os.environ['DJANGO_DB_USER_PASSWORD'],
         'HOST': os.environ['DJANGO_DB_HOST'],
         'PORT': os.environ['DJANGO_DB_PORT'],
+    },
+    'buildbot': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ['DJANGO_DB_NAME_BB'],
+        'USER': os.environ['DJANGO_DB_USER_NAME_BB'],
+        'PASSWORD': os.environ['DJANGO_DB_USER_PASSWORD_BB'],
+        'HOST': os.environ['DJANGO_DB_HOST_BB'],
+        'PORT': os.environ['DJANGO_DB_PORT_BB'],
     }
 }
 

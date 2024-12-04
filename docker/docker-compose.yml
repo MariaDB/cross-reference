@@ -14,13 +14,20 @@ services:
       - DJANGO_DB_NAME
       - DJANGO_DB_USER_NAME
       - DJANGO_DB_USER_PASSWORD
-      - DJANGO_LOG_LEVEL
       - DJANGO_DB_HOST
       - DJANGO_DB_PORT
+      - DJANGO_DB_NAME_BB
+      - DJANGO_DB_USER_NAME_BB
+      - DJANGO_DB_USER_PASSWORD_BB
+      - DJANGO_DB_HOST_BB
+      - DJANGO_DB_PORT_BB
+      - DJANGO_LOG_LEVEL
     command: gunicorn crossreference.wsgi:application --bind 0.0.0.0:8000 -w 6 -t 60
                       --capture-output
-                      --access-logfile /app/logs/gunicorn-access.log
+                      --access-logfile -
+                      --log-level info
                       --reload
+
     volumes:
       # nginx serves the apps static files, share volume
       - static_volume:/app/src/staticfiles:Z
