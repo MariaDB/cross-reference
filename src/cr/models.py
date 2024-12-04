@@ -26,7 +26,7 @@ class TestRun(models.Model):
 
   @property
   def platform_name(self):
-      builder = Builder.objects.filter(name=self.platform).first()
+      builder = Builder.objects.using('buildbot').filter(name=self.platform).first()
       return builder.id if builder else None
 
   class Meta:
