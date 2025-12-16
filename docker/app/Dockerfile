@@ -1,6 +1,6 @@
 ARG PYTHON_VERSION
 # Use an official Python runtime as a parent image
-FROM python:${PYTHON_VERSION}-alpine
+FROM python:${PYTHON_VERSION}-alpine3.20
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
