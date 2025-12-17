@@ -78,3 +78,12 @@ class TestFailureViewSet(viewsets.ReadOnlyModelViewSet):
         test_failures = select_test_failures(filters)
         serializer = TestFailureSerializer(test_failures["test_runs"], many=True)
         return Response(serializer.data)
+
+
+def health_check(request):
+    # Check the db connection by performing a simple query
+    try:
+        TestFailure.objects.using('buildbot').exists()
+        return HttpResponse("OK", status=200)
+    except Exception:
+        return HttpResponse("Database connection error", status=500)

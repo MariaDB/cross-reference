@@ -12,6 +12,9 @@ DEBUG = bool(os.environ['DJANGO_DEBUG'])
 # ALLOWED_HOSTS
 ALLOWED_HOSTS = [os.environ['DJANGO_ALLOWED_HOSTS']]
 
+# Debug Toolbar settings
+INTERNAL_IPS = ['127.0.0.1']
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -22,6 +25,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'cr',
     'rest_framework',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
@@ -32,6 +36,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'crossreference.urls'

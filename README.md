@@ -8,6 +8,13 @@ This API provides access to the Buildbot test failure data. You can filter resul
 cr/api/testfailures/
 ```
 
+## Health check
+
+`/cr/health`
+
+- returns 200 OK if the database is reachable
+- returns 500 otherwise
+
 ---
 
 ## Query Parameters
