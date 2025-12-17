@@ -1,4 +1,4 @@
-version: '3'
+---
 services:
   web:
     build:
@@ -34,6 +34,10 @@ services:
       - ../src/:/app/src/:Z
     container_name: crossreference-app
     network_mode: host
+    logging:
+      driver: journald
+      options:
+        tag: "cr-web"
 
   nginx:
     build:
@@ -49,6 +53,10 @@ services:
       - web
     container_name: crossreference-nginx
     network_mode: host
+    logging:
+      driver: journald
+      options:
+        tag: "cr-nginx"
 
 volumes:
   static_volume:
