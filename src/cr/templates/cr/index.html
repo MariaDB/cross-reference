@@ -70,25 +70,51 @@
   <h2 style="color: #4e629a;">Results</h2>
   <div class="table-container">
     {% if test_runs or test_failures or builders %}
+        <div class="table-filters">
+            <input id="failureFilter" placeholder="Failure Text">
+            <button id="clearFiltersBtn" type="button">Clear All Filters</button>
+        </div>
         <table class="results-table">
-    	<thead>
-    		<tr>
-    		    <th>Build Details</th>
-    		    <th>Branch</th>
-
-    		    <th>Revision</th>
-    		    <th>Platform</th>
-
-    		    <th>Time</th>
-    		    <th>Build Number</th>
-    		    <th>Type</th>
-
-    		    <th>Run Info</th>
-    		    <th>Test Name</th>
-    		    <th>Test Variant</th>
-
-    		</tr>
-    	</thead>
+            <thead>
+              <tr>
+                <th>Build Details</th>
+                
+                <th>
+                  Branch
+                  <span class="filter-btn" data-column="branch">⏷</span>
+                </th>
+          
+                <th>
+                  Revision
+                  <span class="filter-btn" data-column="revision">⏷</span>
+                </th>
+          
+                <th>
+                  Platform
+                  <span class="filter-btn" data-column="platform">⏷</span>
+                </th>
+          
+                <th>Time</th>
+                <th>Build Number</th>
+          
+                <th>
+                  Type
+                  <span class="filter-btn" data-column="type">⏷</span>
+                </th>
+          
+                <th>Run Info</th>
+          
+                <th>
+                  Test Name
+                  <span class="filter-btn" data-column="testName">⏷</span>
+                </th>
+          
+                <th>
+                  Test Variant
+                  <span class="filter-btn" data-column="testVariant">⏷</span>
+                </th>
+              </tr>
+            </thead>
         {% for test in test_runs %}
             <tr class="expandable">
                 <td> [<a href="https://buildbot.mariadb.org/#/builders/{{ test.test_run_id.platform_name }}/builds/{{ test.test_run_id.bbnum }}" > Build details </a>] </td>
