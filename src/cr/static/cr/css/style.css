@@ -320,4 +320,27 @@ input[type=button]:hover, input[type=submit]:hover {
 .scroll-up-arrow-container i:hover {
   color: #94adf3;
 }
+
+.filter-btn {
+  cursor: pointer;
+  margin-left: 5px;
+  font-size: 12px;
+}
+
+.filter-menu {
+  position: absolute;
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 5px;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  display: none;
+}
+
+.filter-menu label {
+  display: block;
+  white-space: nowrap;
+}
+
 /* ------------------------------ */
