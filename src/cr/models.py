@@ -71,6 +71,12 @@ def select_test_failures(filters, include_failures=True):
 
   reg_exp = {
     'branch': [
+      # Support exact match via a special syntax `=branch_name``
+      {
+        'pattern': '^=([a-zA-Z0-9_.-]+)$',
+        'filter': [('test_run_id__branch__exact', 'AND')],
+        'replace': True
+      },
       # Pattern: 10.?
       {
         'pattern': '^([0-9]{1,2}\\.)(\\?)$',
@@ -202,7 +208,11 @@ def select_test_failures(filters, include_failures=True):
           # If the input contains ? or * then eliminate them
           # This is the case for multiple Regex rules. Example: 10.?, *timeout* etc.
           if expression['replace']:
-            search_string = re.sub('(\\?)|(\\*)', '', search_string)
+              # Special syntax: =branch_name -> exact match on branch_name (group 1)
+              if key == "branch" and search_string.startswith('=') and match and match.lastindex:
+                  search_string = match.group(1)
+              else:
+                  search_string = re.sub('(\\?)|(\\*)', '', search_string)
 
           # Loop through all the filters of a pattern
           # The filters are used for the database columns
