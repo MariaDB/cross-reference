@@ -115,3 +115,126 @@ print(data)
 |-----------------------|------------------------------|
 | `cr/`                   | Index page                   |
 | `cr/api/testfailures/`  | Test Failures API endpoint   |
+
+
+## Filtering
+
+The same filter semantics apply whether the user submits the fields via the GUI or via the API.  
+All inputs are treated as **strings**; an empty string (or `null`) means “ignore this field”.
+
+### Branch (`filters.branch`)
+Backed by `test_run_id__branch`.
+
+Supported inputs:
+
+1. **Exact match (special syntax)**
+   - Input: `=branch_name`
+   - Lookup: `branch__exact`
+   - Example: `=10.6`
+2. **Major.minor prefix (question mark)**
+   - Input: `10.?`
+   - Lookup: `branch__startswith` with `?` stripped
+   - Example: `10.?` → matches branches starting with `10.`
+3. **Exact numeric branch**
+   - Input: `10.6`
+   - Lookup: `branch__exact`
+4. **Substring match (surrounded by `*`)**
+   - Input: `*10.6*`
+   - Lookup: `branch__icontains` with `*` stripped
+5. **Substring match with `?` (surrounded by `*`)**
+   - Input: `*10.?*`
+   - Lookup: `branch__icontains` with `*` and `?` stripped
+   - Example: `*10.?*` → searches for substring `10.`
+
+6. **Default (free text, no wildcards)**
+   - Input: `feature_x`, `10.6.1`, `release-2026`
+   - Lookup: `branch__icontains`
+
+Notes:
+- Allowed characters: letters, digits, `_ . - * ?` (and `=` only for the special exact syntax).
+- If the value contains other characters (e.g., spaces), it may fail to match any supported pattern and will be skipped.
+
+---
+
+### Revision (`filters.revision`)
+Backed by `test_run_id__revision`.
+
+- Input: `abc123`
+- Lookup: `revision__startswith`
+- Allowed characters: letters and digits only (`[a-zA-Z0-9]`)
+
+---
+
+### Platform (`filters.platform`)
+Backed by `test_run_id__platform`.
+
+1. **Exact match**
+   - Input: `amd64-centos-7-bintar`
+   - Lookup: `platform__exact`
+2. **Substring match**
+   - Input: `*bintar*`
+   - Lookup: `platform__icontains` with `*` stripped
+
+---
+
+### From Date (`filters.dt`)
+Backed by `test_run_id__dt`.
+
+- Input formats accepted:
+  - `YYYY-MM-DD` (e.g., `2026-01-01`)
+  - `YYYY-MM-DD HH:MM:SS` (e.g., `2026-01-01 12:30:00`)
+- Lookup: `dt__gte` (inclusive)
+
+If parsing fails, the date filter is not applied.
+
+---
+
+### Type (`filters.typ`)
+Backed by `test_run_id__typ`.
+
+1. **Exact**
+   - Input: `nm`
+   - Lookup: `typ__exact`
+2. **Prefix**
+   - Input: `rocks*`
+   - Lookup: `typ__startswith` with `*` stripped
+
+
+---
+
+### Test Name (`filters.test_name`)
+Backed by `test_failure.test_name`.
+
+1. **Exact**
+   - Input: `spider.auto_increment`
+   - Lookup: `test_name__exact`
+2. **Substring (special `*.` prefix)**
+   - Input: `*.sp-error`
+   - Lookup: `test_name__icontains` with `*` stripped (the leading `.` remains)
+   - Example: `*.sp-error` → searches for substring `.sp-error` inside `test_name`
+
+Allowed characters: `/ a-z A-Z 0-9 _ . -`
+
+---
+
+### Failure Output (`filters.failure_text`)
+Backed by `test_failure.failure_text`.
+
+1. **Default substring search**
+   - Input: `Unknown error -11`
+   - Lookup: `failure_text__icontains`
+
+2. **Substring wrapped in `*` (alnum only)**
+   - Input: `*timeout*`
+   - Lookup: `failure_text__icontains` with `*` stripped
+
+Notes:
+- The “no-asterisks” form is the most flexible (can include spaces/symbols).
+- The `*...*` form only matches alphanumeric content per the regex.
+
+---
+
+### Limit (`filters.limit`)
+- Default: `50`
+- Input: numeric string (e.g., `100`)
+- Applied as slice after ordering: newest first (`order_by('-test_run_id__dt')[:limit]`)
