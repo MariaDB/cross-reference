@@ -57,7 +57,7 @@ class TestFailure(models.Model):
 
 
 def select_test_failures(filters, include_failures=True):
-  available_filters = ["branch", "revision", "platform", "dt", "bbnum", "typ", 
+  available_filters = ["branch", "revision", "platform", "dt", "bbnum", "typ",
                        "info", "test_name", "test_variant", "info_text", "failure_text"]
 
   # New implementation
@@ -151,15 +151,29 @@ def select_test_failures(filters, include_failures=True):
       }
     ],
     'test_name': [
+      # contains: *increment*
       {
-        'pattern': '^[/a-zA-Z0-9_.-]*$',
-        'filter': [('test_name__exact', 'AND')],
-        'replace': False
-      },
-      {
-        'pattern': '^\\*\\.[/a-zA-Z0-9_.-]*$',
+        'pattern': r'^\*[/a-zA-Z0-9_.-]+\*$',
         'filter': [('test_name__icontains', 'AND')],
         'replace': True
+      },
+      # endswith: *auto_increment
+      {
+        'pattern': r'^\*[/a-zA-Z0-9_.-]+$',
+        'filter': [('test_name__iendswith', 'AND')],
+        'replace': True
+      },
+      # startswith: spider.auto*
+      {
+        'pattern': r'^[/a-zA-Z0-9_.-]+\*$',
+        'filter': [('test_name__istartswith', 'AND')],
+        'replace': True
+      },
+      # exact match: spider.auto_increment
+      {
+        'pattern': r'^[/a-zA-Z0-9_.-]+$',
+        'filter': [('test_name__exact', 'AND')],
+        'replace': False
       }
     ],
     'test_variant': [
@@ -244,7 +258,7 @@ def select_test_failures(filters, include_failures=True):
       # Include the date in filtering if the passes the try/except block
       else:
         test_failure_filters = test_failure_filters.filter(Q(test_run_id__dt__gte=formatted_date))
-        
+
   # Apply the limit filer and get related models to limit the no. of queries
   if test_failure_filters is not None:
     test_failure_filters = test_failure_filters.order_by('-test_run_id__dt')

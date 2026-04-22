@@ -104,7 +104,7 @@ print(data)
 
 ## Notes
 
-- All query parameters are optional. Omitting them will return results up to a default limit of 50.    
+- All query parameters are optional. Omitting them will return results up to a default limit of 50.
 - Dates should be provided in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
 
 ---
@@ -119,7 +119,7 @@ print(data)
 
 ## Filtering
 
-The same filter semantics apply whether the user submits the fields via the GUI or via the API.  
+The same filter semantics apply whether the user submits the fields via the GUI or via the API.
 All inputs are treated as **strings**; an empty string (or `null`) means “ignore this field”.
 
 ### Branch (`filters.branch`)
@@ -208,12 +208,28 @@ Backed by `test_failure.test_name`.
 1. **Exact**
    - Input: `spider.auto_increment`
    - Lookup: `test_name__exact`
-2. **Substring (special `*.` prefix)**
-   - Input: `*.sp-error`
-   - Lookup: `test_name__icontains` with `*` stripped (the leading `.` remains)
-   - Example: `*.sp-error` → searches for substring `.sp-error` inside `test_name`
 
-Allowed characters: `/ a-z A-Z 0-9 _ . -`
+2. **Ends with**
+   - Input: `*auto_increment`
+   - Lookup: `test_name__endswith`
+   - Example: `*auto_increment` → matches any `test_name` that ends with `auto_increment`
+
+3. **Contains**
+   - Input: `*increment*`
+   - Lookup: `test_name__contains`
+   - Example: `*increment*` → matches any `test_name` that contains `increment`
+
+4. **Starts with**
+   - Input: `spider.auto*`
+   - Lookup: `test_name__startswith`
+   - Example: `spider.auto*` → matches any `test_name` that starts with `spider.auto`
+
+Allowed characters inside the pattern: `/ a-z A-Z 0-9 _ . -`
+
+Notes:
+- `*` is only supported as a wildcard at the beginning and/or end of the input.
+- Empty input means no `test_name` filter is applied.
+- Inputs that do not match one of the supported patterns are ignored.
 
 ---
 
