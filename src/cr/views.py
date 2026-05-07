@@ -15,6 +15,7 @@ def index(request):
         "revision",
         "platform",
         "dt",
+        "max_dt",
         "bbnum",
         "typ",
         "info",
@@ -23,6 +24,7 @@ def index(request):
         "info_text",
         "failure_text",
         "limit",
+        "sort_order",
     ]
 
     if request.method == "GET":
@@ -51,6 +53,7 @@ class TestFailureViewSet(viewsets.ReadOnlyModelViewSet):
         "revision",
         "platform",
         "dt",
+        "max_dt",
         "bbnum",
         "typ",
         "info",
@@ -59,6 +62,7 @@ class TestFailureViewSet(viewsets.ReadOnlyModelViewSet):
         "info_text",
         "failure_text",
         "limit",
+        "sort_order",
     ]
 
     def get_queryset(self):

@@ -26,11 +26,13 @@ You can filter the results using the following optional query parameters:
 | `branch`       | string   | Filter by branch name                             | Max length: 100       |
 | `commit`       | string   | Filter by commit hash (revision)                 | Max length: 100       |
 | `builder_name` | string   | Filter by platform or builder name               | Max length: 100       |
-| `start_date`   | datetime | Filter results starting from this date and time  | Format: ISO 8601      |
+| `min_date`     | datetime | Filter results from this date and time           | Format: ISO 8601      |
+| `max_date`     | datetime | Filter results through this date and time        | Format: ISO 8601      |
 | `test_type`    | string   | Filter by test type                               | Max length: 100       |
 | `test_name`    | string   | Filter by test name                               | Max length: 255       |
 | `test_variant` | string   | Filter by test variant                            | Max length: 255       |
 | `limit`        | integer  | Limit the number of results returned             | Min: 1, Max: 200      |
+| `sort_order`   | string   | Sort results by run time                          | `desc` or `asc`       |
 
 ---
 
@@ -49,6 +51,11 @@ GET cr/api/testfailures/?branch=10.11&commit=95782e5cf2dbd977473f91a59bdb47da4bf
 ### Filter by builder name and test type with limit
 ```
 GET cr/api/testfailures/?builder_name=amd64-ubasan-clang-20-debug&test_type=nm&limit=50
+```
+
+### Filter by date range, oldest first
+```
+GET cr/api/testfailures/?min_date=2026-01-01&max_date=2026-01-31&sort_order=asc&limit=50
 ```
 
 ---
@@ -106,6 +113,7 @@ print(data)
 
 - All query parameters are optional. Omitting them will return results up to a default limit of 50.
 - Dates should be provided in ISO 8601 format: `YYYY-MM-DDTHH:MM:SSZ`.
+- Results are newest first by default. Use `sort_order=asc` for oldest first.
 
 ---
 
@@ -177,13 +185,31 @@ Backed by `test_run_id__platform`.
 
 ---
 
-### From Date (`filters.dt`)
+### Min Date (`filters.dt`)
 Backed by `test_run_id__dt`.
 
 - Input formats accepted:
   - `YYYY-MM-DD` (e.g., `2026-01-01`)
+  - `YYYY-MM-DDTHH:MM` (e.g., `2026-01-01T12:30`)
+  - `YYYY-MM-DDTHH:MM:SS` (e.g., `2026-01-01T12:30:00`)
+  - `YYYY-MM-DDTHH:MM:SSZ` (e.g., `2026-01-01T12:30:00Z`)
   - `YYYY-MM-DD HH:MM:SS` (e.g., `2026-01-01 12:30:00`)
 - Lookup: `dt__gte` (inclusive)
+
+If parsing fails, the date filter is not applied.
+
+---
+
+### Max Date (`filters.max_dt`)
+Backed by `test_run_id__dt`.
+
+- Input formats accepted:
+  - `YYYY-MM-DD` (e.g., `2026-01-31`)
+  - `YYYY-MM-DDTHH:MM` (e.g., `2026-01-31T12:30`)
+  - `YYYY-MM-DDTHH:MM:SS` (e.g., `2026-01-31T12:30:00`)
+  - `YYYY-MM-DDTHH:MM:SSZ` (e.g., `2026-01-31T12:30:00Z`)
+  - `YYYY-MM-DD HH:MM:SS` (e.g., `2026-01-31 12:30:00`)
+- Lookup: `dt__lte` (inclusive)
 
 If parsing fails, the date filter is not applied.
 
@@ -253,4 +279,11 @@ Notes:
 ### Limit (`filters.limit`)
 - Default: `50`
 - Input: numeric string (e.g., `100`)
-- Applied as slice after ordering: newest first (`order_by('-test_run_id__dt')[:limit]`)
+- Applied as slice after ordering.
+
+---
+
+### Sort Order (`filters.sort_order`)
+- Default: `desc`
+- `desc`: newest first (`order_by('-test_run_id__dt')[:limit]`)
+- `asc`: oldest first (`order_by('test_run_id__dt')[:limit]`)
