@@ -19,8 +19,12 @@
           <input id="platform" type="text" name="platform" value="{{ platform }}">
       </div>
       <div class="field-container">
-          <label for="dt">From Date: </label>
+          <label for="dt">Min Date: </label>
           <input id="dt" type="text" name="dt" value="{{ dt }}">
+      </div>
+      <div class="field-container">
+          <label for="max_dt">Max Date: </label>
+          <input id="max_dt" type="text" name="max_dt" value="{{ max_dt }}">
       </div>
       <div class="field-container">
           <label for="bbnum">Build Number: </label>
@@ -51,7 +55,7 @@
           <input id="failure_text" type="text" name="failure_text" value="{{ failure_text }}">
       </div>
       <div class="field-container">
-          <label for="Limit">Limit: </label>
+          <label for="limit">Limit: </label>
           <select id="limit" type="text" name="limit" value="{{ limit }}">
             <option value="5" {% if limit == "5" %} selected {% endif %} >5</option>
             <option value="10" {% if limit == "10" %} selected {% endif %} >10</option>
@@ -59,6 +63,13 @@
             <option value="50" {% if limit == "50" %} selected {% endif %} >50</option>
             <option value="100" {% if limit == "100" %} selected {% endif %} >100</option>
             <option value="500" {% if limit == "500" %} selected {% endif %} >500</option>
+          </select>
+      </div>
+      <div class="field-container">
+          <label for="sort_order">Order: </label>
+          <select id="sort_order" type="text" name="sort_order" value="{{ sort_order }}">
+            <option value="desc" {% if sort_order == "desc" or sort_order == "" %} selected {% endif %} >Newest first</option>
+            <option value="asc" {% if sort_order == "asc" %} selected {% endif %} >Oldest first</option>
           </select>
       </div>
       <div class="submit-container">
@@ -145,4 +156,3 @@
   </div>
 </div>
 {% endblock %}
-

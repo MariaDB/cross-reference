@@ -56,6 +56,22 @@ class TestFailure(models.Model):
     unique_together = (('test_run_id', 'test_name', 'test_variant'),)
 
 
+def _parse_filter_date(value):
+  for dt_format in (
+    '%Y-%m-%d',
+    '%Y-%m-%dT%H:%M',
+    '%Y-%m-%dT%H:%M:%S',
+    '%Y-%m-%dT%H:%M:%SZ',
+    '%Y-%m-%d %H:%M:%S',
+  ):
+    try:
+      return datetime.strptime(value, dt_format)
+    except ValueError:
+      continue
+
+  return None
+
+
 def select_test_failures(filters, include_failures=True):
   available_filters = ["branch", "revision", "platform", "dt", "bbnum", "typ",
                        "info", "test_name", "test_variant", "info_text", "failure_text"]
@@ -65,6 +81,8 @@ def select_test_failures(filters, include_failures=True):
   if 'limit' in filters and filters['limit'] != '':
     limit = int(filters['limit'])
 
+  sort_order = filters.get('sort_order', 'desc')
+  order_by = 'test_run_id__dt' if sort_order == 'asc' else '-test_run_id__dt'
 
   test_run_filters = None
   test_failure_filters = TestFailure.objects.using('buildbot').all()
@@ -246,22 +264,21 @@ def select_test_failures(filters, include_failures=True):
 
         test_failure_filters = test_failure_filters.filter(q_objects)
 
-  # From Date dropdown filtering
-  if filters['dt']:
-    # Check 2 date and time formats (one with time, another without)
-    for dt_format in ('%Y-%m-%d', '%Y-%m-%d %H:%M:%S'):
-      try:
-        formatted_date = datetime.strptime(filters['dt'], dt_format)
-      except ValueError as e:
-        print(e)
-        pass
-      # Include the date in filtering if the passes the try/except block
-      else:
-        test_failure_filters = test_failure_filters.filter(Q(test_run_id__dt__gte=formatted_date))
+  # Min Date dropdown filtering
+  if filters.get('dt'):
+    formatted_date = _parse_filter_date(filters['dt'])
+    if formatted_date:
+      test_failure_filters = test_failure_filters.filter(Q(test_run_id__dt__gte=formatted_date))
+
+  # Max Date dropdown filtering
+  if filters.get('max_dt'):
+    formatted_date = _parse_filter_date(filters['max_dt'])
+    if formatted_date:
+      test_failure_filters = test_failure_filters.filter(Q(test_run_id__dt__lte=formatted_date))
 
   # Apply the limit filer and get related models to limit the no. of queries
   if test_failure_filters is not None:
-    test_failure_filters = test_failure_filters.order_by('-test_run_id__dt')
+    test_failure_filters = test_failure_filters.order_by(order_by)
     test_failure_filters = test_failure_filters[0:limit]
     test_failure_filters = test_failure_filters.select_related('test_run_id')
 
