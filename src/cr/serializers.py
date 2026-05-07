@@ -7,6 +7,7 @@ class TestFailureSerializer(serializers.ModelSerializer):
     builder_name = serializers.CharField(source="test_run_id.platform", read_only=True)
     commit = serializers.CharField(source="test_run_id.revision", read_only=True)
     branch = serializers.CharField(source="test_run_id.branch", read_only=True)
+    dt = serializers.DateTimeField(source="test_run_id.dt", read_only=True)
 
     class Meta:
         model = TestFailure
